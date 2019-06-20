@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="battle.css" type="text/css" />
+        <title>BattleShip Game</title>
+    </head>
+    <body>
+        <h1>BattleShip</h1>
+        <div class="box left">
+            <h3>Selecciona la posición de tus naves</h3>
+            <div id="board">
+            </div>
+            <div id="ships">
+                <h4>Tus naves:</h4>
+                <div>
+                    <div>
+                        <span>Portaviones</span></br>
+                        <span>Tamaño: 5</span>
+                    </div>
+                    <div class="position"></div>
+                </div>
+                <div>
+                    <div>
+                        <span>Acorazado</span></br>
+                        <span>Tamaño: 4</span>
+                    </div>
+                    <div class="position"></div>
+                </div>
+                <div>
+                    <div>
+                        <span>Submarino</span></br>
+                        <span>Tamaño: 3</span>
+                    </div>
+                    <div class="position"></div>
+                </div>
+                <div>
+                    <div>
+                        <span>Destructor</span></br>
+                        <span>Tamaño: 2</span>
+                    </div>
+                    <div class="position"></div>
+                </div>           
+            </div>
+        </div>
+        <button onclick="startGame()">Empezar juego</button>
+        <div class="box right">
+            <div id="boardAttack">
+            </div>
+        </div>
+        <script type="text/javascript" src="battle.js"></script>
+    </body>
+</html>
