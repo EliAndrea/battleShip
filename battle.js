@@ -11,17 +11,17 @@ let ship = {};
 let shipRandom = {};
 
 //Función para creación de tableros
-function createMatrix(boardType, matrixType, func){
+function createMatrix(boardType, matrixType, func, type){
     for(let i=0; i<10; i++){
         let list = []
         let row = document.createElement("div");
         boardType.appendChild(row);
-        row.className = "row"
+        row.className = "myRow"
         for(let j=0; j<10; j++){
             let grid = document.createElement("div");
             row.appendChild(grid);
             grid.className = "grid";
-            grid.id = i + "," + j;
+            grid.id = i + "," + j + "," + type;
             grid.addEventListener("click", func);
             list.push("");
         }
@@ -35,10 +35,9 @@ function selectShip(event){
     ship.size = sizeShip[shipData[1]];
     ship.quantity = quantityShip[shipData[1]];
     ship.id = shipData[1];
-    console.log(ship)
 }
 //Creación de tablero jugador
-createMatrix(board, matrix, selectPosition);
+createMatrix(board, matrix, selectPosition, "player");
 //Creación de barcos
 for(let i=0; i<position.length; i++){
     let horizontal = document.createElement("div");
@@ -49,12 +48,6 @@ for(let i=0; i<position.length; i++){
     position[i].appendChild(vertical);
     vertical.className = "vertical " + i;
     vertical.addEventListener("click", selectShip)
-}
-//Función de botón iniciar juego
-function startGame(){
-    console.log("se está llamando")
-    createMatrix(boardAttack, matrixAttack, selectPosition);
-    selectPositionRandom()
 }
 //Función para seleccionar posición de los barcos
 function selectPosition(event){
@@ -67,7 +60,7 @@ function selectPosition(event){
             if((y + (ship.size - 1)) < 10){
                 for(let i=y; i<(y + ship.size); i++){
                     matrix[x][i] = "ship";
-                    document.getElementById(x + "," + i).className += " selected";
+                    document.getElementById(x + "," + i + "," + "player").className += " selected";
                 }
                 quantityShip[ship.id] -= 1;
                 ship = {}
@@ -80,7 +73,7 @@ function selectPosition(event){
             if((x + (ship.size - 1)) < 10){
                 for(let i=x; i<(x + ship.size); i++){
                     matrix[i][y] = "ship";
-                    document.getElementById(i + "," + y).className += " selected";
+                    document.getElementById(i + "," + y + "," + "player").className += " selected";
                 }
                 quantityShip[ship.id] -= 1;
                 ship = {}
@@ -89,11 +82,16 @@ function selectPosition(event){
                 alert("seleccione otra posición");
             }
         }
-        console.log(matrix)
     }
     else{
         alert("seleccione un barco disponible");
     }
+}
+//Función de botón iniciar juego
+function startGame(){
+    createMatrix(boardAttack, matrixAttack, checkShot, "pc");
+    selectPositionRandom()
+    document.querySelector("#button").disabled = true;
 }
 //Generar posición random de barcos
 function selectPositionRandom(){
@@ -107,9 +105,6 @@ function selectPositionRandom(){
 }
 //Verificación de posición válida
 function checkPosition(pos, axis, size){
-    console.log("se ejecuta la funcion")
-    console.log(size)
-    console.log(shipRandom.position, shipRandom.x + "," + shipRandom.y)
     if(shipRandom.position  === pos){
         if((axis + (size - 1)) < 10){
             return true;
@@ -125,19 +120,77 @@ function random(i){
     shipRandom.x = Math.floor(Math.random() * Math.floor(10));
     shipRandom.y = Math.floor(Math.random() * Math.floor(10));
     if(checkPosition("horizontal", shipRandom.y, sizeShip[i])){
-        console.log("agregando");
+        for(let j=shipRandom.y; j<(shipRandom.y + sizeShip[i]); j++){
+            if(matrixAttack[shipRandom.x][j] === "ship"){
+                return random(i)
+            }
+        }
         for(let j=shipRandom.y; j<(shipRandom.y + sizeShip[i]); j++){
             matrixAttack[shipRandom.x][j] = "ship";
         }
     }
     else if(checkPosition("vertical", shipRandom.x, sizeShip[i])){
-        console.log("agregando");
+        for(let j=shipRandom.x; j<(shipRandom.x + sizeShip[i]); j++){
+            if(matrixAttack[j][shipRandom.y] === "ship"){
+                return random(i)
+            }
+        }
         for(let j=shipRandom.x; j<(shipRandom.x + sizeShip[i]); j++){
             matrixAttack[j][shipRandom.y] = "ship";
         }
     }
     else{
-        console.log("volver a random");
         return random(i)
+    }
+}
+function checkShot(event){
+    let grid = event.target
+    let gridID = grid.id.split(",");
+    let x = parseInt(gridID[0]);
+    let y = parseInt(gridID[1]);
+    if(matrixAttack[x][y] === "ship"){
+        alert("acertaste");
+        matrixAttack[x][y] = "hit";
+        document.getElementById(x + "," + y + "," + "pc").className += " hit";
+        checkWinner(matrixAttack, "player")
+    }
+    else{
+        alert("al agua");
+        matrixAttack[x][y] = "miss";
+        document.getElementById(x + "," + y + "," + "pc").className += " miss";
+        shotPc()
+    }
+}
+function shotPc(){
+    let x = Math.floor(Math.random() * Math.floor(10));
+    let y = Math.floor(Math.random() * Math.floor(10));
+    if(matrix[x][y] === "ship"){
+        alert("ops! te han disparado");
+        matrix[x][y] = "hit";
+        document.getElementById(x + "," + y + "," + "player").className += " hit";
+        checkWinner(matrix, "pc");
+        return shotPc();
+    }
+    else if(matrix[x][y] === "hit" || matrix[x][y] === "miss"){
+        return shotPc();
+    }
+    else{
+        alert("al agua");
+        matrix[x][y] = "miss";
+        document.getElementById(x + "," + y + "," + "player").className += " miss";
+    }
+}
+function checkWinner(matrix, player){
+    for(let i=0; i<10; i++){
+        let arraychecked = matrix[i].filter((index)=>{return index === "ship"})
+        if(arraychecked.length > 0){
+            return
+        }
+    }
+    if(player === "pc"){
+        alert("Gana el pc")
+    }
+    else{
+        alert("ganaste")
     }
 }
