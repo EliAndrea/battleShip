@@ -66,7 +66,7 @@ function selectPosition(event){
                 ship = {}
             }
             else{
-                alert("seleccione otra posición");
+                alert("Selecciona una posición válida");
             }
         }
         else if(ship.position === "vertical"){
@@ -79,12 +79,12 @@ function selectPosition(event){
                 ship = {}
             }
             else{
-                alert("seleccione otra posición");
+                alert("Selecciona una posición válida");
             }
         }
     }
     else{
-        alert("seleccione un barco disponible");
+        alert("Debes seleccionar un barco disponible");
     }
 }
 //Función de botón iniciar juego
@@ -101,7 +101,6 @@ function selectPositionRandom(){
             quantityShipPC[i] -= 1;
         }
     }
-    console.log(matrixAttack)
 }
 //Verificación de posición válida
 function checkPosition(pos, axis, size){
@@ -143,29 +142,31 @@ function random(i){
         return random(i)
     }
 }
+//Verificar tiro de jugador
 function checkShot(event){
     let grid = event.target
     let gridID = grid.id.split(",");
     let x = parseInt(gridID[0]);
     let y = parseInt(gridID[1]);
     if(matrixAttack[x][y] === "ship"){
-        alert("acertaste");
+        alert("Muy bien, acertaste. Vuelve a jugar");
         matrixAttack[x][y] = "hit";
         document.getElementById(x + "," + y + "," + "pc").className += " hit";
         checkWinner(matrixAttack, "player")
     }
     else{
-        alert("al agua");
+        alert("Mal! tu disparo cayó al agua");
         matrixAttack[x][y] = "miss";
         document.getElementById(x + "," + y + "," + "pc").className += " miss";
         shotPc()
     }
 }
+//Jugada del PC
 function shotPc(){
     let x = Math.floor(Math.random() * Math.floor(10));
     let y = Math.floor(Math.random() * Math.floor(10));
     if(matrix[x][y] === "ship"){
-        alert("ops! te han disparado");
+        alert("Ops! te han disparado");
         matrix[x][y] = "hit";
         document.getElementById(x + "," + y + "," + "player").className += " hit";
         checkWinner(matrix, "pc");
@@ -175,11 +176,12 @@ function shotPc(){
         return shotPc();
     }
     else{
-        alert("al agua");
+        alert("El disparo del pc cayó al agua");
         matrix[x][y] = "miss";
         document.getElementById(x + "," + y + "," + "player").className += " miss";
     }
 }
+//Revisar ganador
 function checkWinner(matrix, player){
     for(let i=0; i<10; i++){
         let arraychecked = matrix[i].filter((index)=>{return index === "ship"})
@@ -188,9 +190,9 @@ function checkWinner(matrix, player){
         }
     }
     if(player === "pc"){
-        alert("Gana el pc")
+        alert("Ha ganado el PC")
     }
     else{
-        alert("ganaste")
+        alert("GANASTE!!!")
     }
 }
